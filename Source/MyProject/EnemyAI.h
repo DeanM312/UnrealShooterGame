@@ -70,4 +70,6 @@ public:
 
 	bool reacted;
 	bool elite;
+
+	APawn* player;
 };

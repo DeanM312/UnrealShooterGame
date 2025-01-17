@@ -10,17 +10,7 @@
 AEnemyAI::AEnemyAI()
 {
 	/*
-	ConstructorHelpers::FObjectFinder<USoundBase> FIRE(TEXT("/Game/Sounds/M4A1"));
-	FireSound = FIRE.Object;
-
-	ConstructorHelpers::FObjectFinder<USoundBase> ATTACK(TEXT("/Game/Sounds/attacking"));
-	AttackLine = ATTACK.Object;
-
-	ConstructorHelpers::FObjectFinder<USoundBase> RANDOM(TEXT("/Game/Sounds/random"));
-	RandomLine = RANDOM.Object;
-	
-	ConstructorHelpers::FObjectFinder<USoundBase> GENERAL(TEXT("/Game/Sounds/Lines/generalnew"));
-	GeneralLine = GENERAL.Object;
+	Voicelines
 	*/
 
 	ConstructorHelpers::FObjectFinder<USoundBase> FIRE(TEXT("/Game/Sounds/M4A1"));
@@ -70,6 +60,8 @@ void AEnemyAI::BeginPlay() {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAI::StaticClass(), friends);
 
 	elite = Cast<AEnemyCharacter>(GetPawn())->elite;
+
+	player = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 void AEnemyAI::Tick(float DeltaTime) {
@@ -101,10 +93,10 @@ void AEnemyAI::Tick(float DeltaTime) {
 	{
 	
 		//SIGHTTTTT
-		if (GetWorld()->GetFirstPlayerController()->GetPawn())
+		if (player)
 		{
 			FHitResult Hit;
-			FVector ppos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() + FVector(0, 0, 30 * tick);
+			FVector ppos = player->GetActorLocation() + FVector(0, 0, 30 * tick);
 			FCollisionQueryParams TraceParams;
 
 
@@ -319,9 +311,9 @@ void AEnemyAI::RepeatingFunction() {
 
 	//dist = GetPawn()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-	if (GetWorld()->GetFirstPlayerController()->GetPawn())
+	if (player)
 	{
-		dist = FVector::Dist(ostartpos, GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation());
+		dist = FVector::Dist(ostartpos, player->GetActorLocation());
 	}
 
 	//if (GEngine)
@@ -355,7 +347,7 @@ void AEnemyAI::RepeatingFunction() {
 				UGameplayStatics::PlaySoundAtLocation(this, GeneralLine, GetPawn()->GetActorLocation());
 			}
 
-			if (GetWorld()->GetFirstPlayerController()->GetPawn())
+			if (player)
 			{
 
 				MoveToLocation(playerpos);
