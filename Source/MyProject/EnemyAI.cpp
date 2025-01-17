@@ -31,8 +31,6 @@ AEnemyAI::AEnemyAI()
 	RandomLines.Add(RANDOM3.Object);
 	RandomLines.Add(GENERAL.Object);
 
-
-
 	ostartpos = FVector(0, 0, 0);
 
 	currentrotation = FRotator(0, 0, 0);
@@ -44,8 +42,6 @@ AEnemyAI::AEnemyAI()
 	tick = 0;
 
 	reacted = false;
-
-
 }
 
 void AEnemyAI::BeginPlay() {
@@ -58,9 +54,6 @@ void AEnemyAI::BeginPlay() {
 	
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAI::StaticClass(), friends);
-
-	elite = Cast<AEnemyCharacter>(GetPawn())->elite;
-
 	player = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
@@ -70,18 +63,13 @@ void AEnemyAI::Tick(float DeltaTime) {
 	cpos = GetPawn()->GetActorLocation() + FVector(0.0f, 0.0f, 70.0f);
 	FRotator targetrotation = (playerpos - cpos).GetSafeNormal().Rotation();
 
-
 	float aimspeed = 100.f;
 	
-
-
 	if (abs(currentrotation.Pitch - targetrotation.Pitch) < 2) {
 		if (abs(currentrotation.Yaw - targetrotation.Yaw) < 2) {
 			aimspeed = 10.f;
 		}
 	}
-
-
 
 	tick++;
 	if (tick > 2)
@@ -91,14 +79,12 @@ void AEnemyAI::Tick(float DeltaTime) {
 
 	if (dist < 4000)
 	{
-	
 		//SIGHTTTTT
 		if (player)
 		{
 			FHitResult Hit;
 			FVector ppos = player->GetActorLocation() + FVector(0, 0, 30 * tick);
 			FCollisionQueryParams TraceParams;
-
 
 			if (GetWorld()->LineTraceSingleByChannel(Hit, cpos, ppos + FVector(0, 0, 40), ECC_Destructible, TraceParams)) {
 
@@ -120,10 +106,6 @@ void AEnemyAI::Tick(float DeltaTime) {
 						}
 					}
 			
-
-
-
-
 					//if (GEngine)
 						//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, playerpos.ToString());
 				}
@@ -134,16 +116,9 @@ void AEnemyAI::Tick(float DeltaTime) {
 
 				//DrawDebugLine(GetWorld(), cpos, ppos, FColor::Orange, false, 2.0f);
 			}
-
-
-
 		}
-		
-	
 
 		currentrotation = FMath::RInterpTo(currentrotation, targetrotation, DeltaTime, aimspeed + aimaccel);
-
-
 
 		SetFocalPoint(currentrotation.Vector() * 10000);
 
@@ -151,97 +126,49 @@ void AEnemyAI::Tick(float DeltaTime) {
 
 		//playerpos.Z = playerpos.Z + 70;
 
-
 		//if (GEngine)
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, playerpos.ToString());
 
 
-
 		//GetPawn()->GetController()->SetControlRotation(currentrotation);
-
 
 		//if (GEngine)
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, currentrotation.ToString());
 
-
 		//DrawDebugLine(GetWorld(), cpos, currentfocus, FColor::Orange, false, 2.0f);
-
-
-
-
 
 		if (abs(currentrotation.Pitch - targetrotation.Pitch) < 2) {
 			if (abs(currentrotation.Yaw - targetrotation.Yaw) < 2) {
 
-
-
-
 				//if (GEngine)
 					//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::SanitizeFloat(aimaccel));
-
-
-
 
 				UWorld* const World = GetWorld();
 				if (World != NULL)
 				{
-
 					FHitResult Hit;
 
-
-
 					FVector Start = cpos;
-
-
-
-
-
 
 					FCollisionQueryParams TraceParams;
 					for (int i = 0; i < 2; i++)
 					{
-
 						FVector End = Start + (targetrotation + FRotator(headshotoff * i, 0, 0)).Vector() * 100000;
 
-
-
-
-
-
-
-
-
 						//DrawDebugLine(GetWorld(), cpos, End, FColor::Orange, false, 2.0f);
-
 
 						//if (GEngine)
 							//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, currentrotation.ToString());
 
-
 						if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Destructible, TraceParams)) {
-
-
-
-
 							if ((Hit.BoneName != "None") && (shot == 0)) {
-
-
-								
-
 								Delegate.BindUFunction(this, "TakeTheShot", headshotoff * i);
-
-
 
 								float rantime = 0;
 
 								if (reacted == true)
 								{
 									rantime = 0.3f;
-									if (elite)
-									{
-										rantime = 0.05f;
-									}
-
 								}
 								else
 								{
@@ -250,12 +177,6 @@ void AEnemyAI::Tick(float DeltaTime) {
 								}
 
 								GetWorldTimerManager().SetTimer(ShotsHandle, Delegate, rantime, false);
-
-
-
-
-
-
 								GetWorldTimerManager().SetTimer(PeakHandle, this, &AEnemyAI::Peak, FMath::RandRange(0.25f, 0.3f), false, rantime);
 
 								shot = 1;
@@ -264,51 +185,17 @@ void AEnemyAI::Tick(float DeltaTime) {
 									UGameplayStatics::PlaySoundAtLocation(this, AttackLine, GetPawn()->GetActorLocation());
 								}
 
-
-
 								break;
-
-
-
-
-
-
-
-
-
 							}
-
-
-
-
-
-
 						}
 					}
-
-
-
 				}
-
-
 			}
-
-
 		}
 	}
-
-
-
-	
 }
 
-
-
 void AEnemyAI::RepeatingFunction() {
-
-
-
-
 	//dist = GetPawn()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	if (player)
@@ -321,8 +208,6 @@ void AEnemyAI::RepeatingFunction() {
 
 	if (dist < 4000)
 	{
-		
-
 		int action = FMath::RandRange(0, 3);
 
 		if (action >= 2) {
@@ -341,7 +226,6 @@ void AEnemyAI::RepeatingFunction() {
 		else if (action == 1) {
 			Peak();
 		}
-
 		else {
 			if (GeneralLine != NULL && FMath::RandRange(0, 50) == 0) {
 				UGameplayStatics::PlaySoundAtLocation(this, GeneralLine, GetPawn()->GetActorLocation());
@@ -352,24 +236,18 @@ void AEnemyAI::RepeatingFunction() {
 
 				MoveToLocation(playerpos);
 			}
-
 		}
 	}
 	else
 	{
 		MoveToLocation(ostartpos);
 	}
-
-
 } 
-
 
 void AEnemyAI::TakeTheShot(float offset) {
 
-
 	//if (GEngine)
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::SanitizeFloat(offset));
-
 
 	shot = 0;
 	reacted = true;
@@ -378,29 +256,18 @@ void AEnemyAI::TakeTheShot(float offset) {
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
 	}
 	
-
-
 	//MoveToLocation(GetPawn()->GetActorLocation());
 	
-
 	UWorld* const World = GetWorld();
 	if (World != NULL)
 	{
-
 		FHitResult Hit;
-
-
 
 		FVector Start = cpos;
 		FVector End = Start + (currentrotation + FRotator(offset, 0, 0)).Vector() * 100000;
 
-
-
 		FCollisionQueryParams TraceParams;
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Destructible, TraceParams)) {
-
-
-
 			//DrawDebugLine(GetWorld(), Start, test, FColor::Orange, false, 2.0f);
 			//DrawDebugSolidBox(GetWorld(), Hit.ImpactPoint, FVector(2), FColor::Blue, true);
 
@@ -416,42 +283,13 @@ void AEnemyAI::TakeTheShot(float offset) {
 				{
 					EnemyRef->hp = EnemyRef->hp - 35;
 					EnemyRef->GetCharacterMovement()->AddImpulse(currentrotation.GetNormalized().Vector() * 40000);
-					
-
-					
-
-					
-
 				}
-
-
-				
-
-
-
 			}
-
-
-
-
-
-
-
 		}
-
-
-
 	}
-
 }
 
-
-
 void AEnemyAI::Peak() {
-
-	
-
-
 	FVector enemypos = GetPawn()->GetActorLocation();
 	float xdif = enemypos.X - playerpos.X;
 	float ydif = enemypos.Y - playerpos.Y;
@@ -471,15 +309,9 @@ void AEnemyAI::Peak() {
 		y2 = enemypos.Y + xdif / 8;
 
 	}
-
-	
-
-
 	//DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), FVector(x2, y2, GetPawn()->GetActorLocation().Z), FColor::Orange, false, 20.0f);
 	
-
 	MoveToLocation(FVector(x2, y2, GetPawn()->GetActorLocation().Z));
-
 }
 
 

@@ -69,7 +69,6 @@ public:
 	int tick;
 
 	bool reacted;
-	bool elite;
 
 	APawn* player;
 };
