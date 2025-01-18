@@ -3,39 +3,30 @@
 
 #include "Core.h"
 #include "AIController.h"
+#include "AIManagerWorldSubsystem.h"
 #include "EnemyAI.generated.h"
+
 
 UCLASS()
 class MYPROJECT_API AEnemyAI : public AAIController
 {
 	GENERATED_BODY()
 
-
 	UFUNCTION()
 	void RepeatingFunction();
-
 
 	UFUNCTION()
 		void TakeTheShot(float offset);
 
-
-
 	UFUNCTION()
 		void Peak();
 
-	
-	
-
 public:
-
 	AEnemyAI();
-
-
 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;
-
 
 	FTimerHandle MemberTimerHandle;
 	FTimerHandle ShotsHandle;
@@ -64,11 +55,14 @@ public:
 
 	float aimaccel = 0.0f;
 
-	TArray<AActor*> friends;
+	UAIManagerWorldSubsystem* AIsubsystem;
 
 	int tick;
 
 	bool reacted;
 
 	APawn* player;
+
+	UFUNCTION()
+		void Die();
 };

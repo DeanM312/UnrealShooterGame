@@ -42,14 +42,12 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-
-	
-
 }
 
 void AEnemyCharacter::Die(FVector force, FName bone)
 {
+	AEnemyAI* EnemyController = Cast<AEnemyAI>(GetController());
+	EnemyController->Die();
 	DetachFromControllerPendingDestroy();
 	
 	/* Disable all collision on capsule */

@@ -6,6 +6,7 @@
 #include "EnemyCharacter.h"
 #include "NavigationSystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AIManagerWorldSubsystem.h"
 
 AEnemyAI::AEnemyAI()
 {
@@ -52,9 +53,11 @@ void AEnemyAI::BeginPlay() {
 
 	startpos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAI::StaticClass(), friends);
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAI::StaticClass(), friends);
 	player = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	AIsubsystem = GetWorld()->GetSubsystem<UAIManagerWorldSubsystem>();
+	AIsubsystem->Register(this);
 }
 
 void AEnemyAI::Tick(float DeltaTime) {
@@ -92,12 +95,11 @@ void AEnemyAI::Tick(float DeltaTime) {
 				{
 					//aimaccel = aimaccel + 3 * DeltaTime;
 
-
-					for (int i = 0; i < friends.Num(); i++)
+					for (int i = 0; i < AIsubsystem->friends.Num(); i++)
 					{
-						if (friends[i]->IsValidLowLevel())
+						if (AIsubsystem->friends[i]->IsValidLowLevel())
 						{
-							AEnemyAI* Friend = Cast<AEnemyAI>(friends[i]);
+							AEnemyAI* Friend = Cast<AEnemyAI>(AIsubsystem->friends[i]);
 
 							if (Friend)
 							{
@@ -313,5 +315,12 @@ void AEnemyAI::Peak() {
 	
 	MoveToLocation(FVector(x2, y2, GetPawn()->GetActorLocation().Z));
 }
+
+void AEnemyAI::Die()
+{
+	AIsubsystem->Unregister(this);
+}
+
+
 
 
